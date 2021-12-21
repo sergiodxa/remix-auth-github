@@ -1,9 +1,8 @@
 import { createCookieSessionStorage } from "@remix-run/server-runtime";
-import { MyStrategy } from "../src";
+import { GitHubStrategy } from "../src";
 
-describe(MyStrategy, () => {
+describe(GitHubStrategy, () => {
   let verify = jest.fn();
-  // You will probably need a sessionStorage to test the strategy.
   let sessionStorage = createCookieSessionStorage({
     cookie: { secrets: ["s3cr3t"] },
   });
@@ -12,10 +11,90 @@ describe(MyStrategy, () => {
     jest.resetAllMocks();
   });
 
-  test("should have the name of the strategy", () => {
-    let strategy = new MyStrategy({ something: "You may need" }, verify);
-    expect(strategy.name).toBe("change-me");
+  test("should allow changing the scope", async () => {
+    let strategy = new GitHubStrategy(
+      {
+        clientID: "CLIENT_ID",
+        clientSecret: "CLIENT_SECRET",
+        callbackURL: "https://example.app/callback",
+        scope: "custom",
+      },
+      verify
+    );
+
+    let request = new Request("https://example.app/auth/github");
+
+    try {
+      await strategy.authenticate(request, sessionStorage, {
+        sessionKey: "user",
+      });
+    } catch (error) {
+      if (!(error instanceof Response)) throw error;
+      let location = error.headers.get("Location");
+
+      if (!location) throw new Error("No redirect header");
+
+      let redirectUrl = new URL(location);
+
+      expect(redirectUrl.searchParams.get("scope")).toBe("custom");
+    }
   });
 
-  test.todo("Write more tests to check everything works as expected");
+  test("should have the scope `email` as default", async () => {
+    let strategy = new GitHubStrategy(
+      {
+        clientID: "CLIENT_ID",
+        clientSecret: "CLIENT_SECRET",
+        callbackURL: "https://example.app/callback",
+      },
+      verify
+    );
+
+    let request = new Request("https://example.app/auth/github");
+
+    try {
+      await strategy.authenticate(request, sessionStorage, {
+        sessionKey: "user",
+      });
+    } catch (error) {
+      if (!(error instanceof Response)) throw error;
+      let location = error.headers.get("Location");
+
+      if (!location) throw new Error("No redirect header");
+
+      let redirectUrl = new URL(location);
+
+      expect(redirectUrl.searchParams.get("scope")).toBe("email");
+    }
+  });
+
+  test("should correctly format the authorization URL", async () => {
+    let strategy = new GitHubStrategy(
+      {
+        clientID: "CLIENT_ID",
+        clientSecret: "CLIENT_SECRET",
+        callbackURL: "https://example.app/callback",
+      },
+      verify
+    );
+
+    let request = new Request("https://example.app/auth/github");
+
+    try {
+      await strategy.authenticate(request, sessionStorage, {
+        sessionKey: "user",
+      });
+    } catch (error) {
+      if (!(error instanceof Response)) throw error;
+
+      let location = error.headers.get("Location");
+
+      if (!location) throw new Error("No redirect header");
+
+      let redirectUrl = new URL(location);
+
+      expect(redirectUrl.hostname).toBe("github.com");
+      expect(redirectUrl.pathname).toBe("/login/oauth/authorize");
+    }
+  });
 });
