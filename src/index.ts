@@ -15,7 +15,8 @@ export interface GitHubStrategyOptions {
   userAgent?: string;
 }
 
-export type GitHubEmails = [{ value: string }];
+export type GitHubEmails = OAuth2Profile["emails"];
+export type GitHubEmailsResponse = { email: string }[];
 
 export interface GitHubProfile extends OAuth2Profile {
   id: string;
@@ -25,7 +26,7 @@ export interface GitHubProfile extends OAuth2Profile {
     givenName: string;
     middleName: string;
   };
-  emails: [{ value: string }];
+  emails: GitHubEmails;
   photos: [{ value: string }];
   _json: {
     login: string;
@@ -136,8 +137,9 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
       },
     });
 
-    let data: GitHubEmails = await response.json();
-    return data;
+    let data: GitHubEmailsResponse = await response.json();
+    let emails: GitHubEmails = data.map(({ email }) => ({ value: email }));
+    return emails;
   }
   protected async userProfile(accessToken: string): Promise<GitHubProfile> {
     let response = await fetch(this.userInfoURL, {
