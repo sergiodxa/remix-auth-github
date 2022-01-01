@@ -15,6 +15,8 @@ export interface GitHubStrategyOptions {
   userAgent?: string;
 }
 
+export type GitHubEmails = [{ value: string }];
+
 export interface GitHubProfile extends OAuth2Profile {
   id: string;
   displayName: string;
@@ -88,6 +90,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
   private allowSignup: boolean;
   private userAgent: string;
   private userInfoURL = "https://api.github.com/user";
+  private userEmailsURL = "https://api.github.com/user/emails";
 
   constructor(
     {
@@ -113,7 +116,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
       },
       verify
     );
-    this.scope = scope ?? "email";
+    this.scope = scope ?? "user:email";
     this.allowSignup = allowSignup ?? true;
     this.userAgent = userAgent ?? "Remix Auth";
   }
@@ -124,7 +127,18 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
       allow_signup: String(this.allowSignup),
     });
   }
+  protected async userEmails(accessToken: string): Promise<GitHubEmails> {
+    let response = await fetch(this.userEmailsURL, {
+      headers: {
+        Accept: "application/vnd.github.v3+json",
+        Authorization: `token ${accessToken}`,
+        "User-Agent": this.userAgent,
+      },
+    });
 
+    let data: GitHubEmails = await response.json();
+    return data;
+  }
   protected async userProfile(accessToken: string): Promise<GitHubProfile> {
     let response = await fetch(this.userInfoURL, {
       headers: {
@@ -135,6 +149,8 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
     });
     let data: GitHubProfile["_json"] = await response.json();
 
+    let emails = await this.userEmails(accessToken);
+
     let profile: GitHubProfile = {
       provider: "github",
       displayName: data.login,
@@ -144,7 +160,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
         givenName: data.name,
         middleName: data.name,
       },
-      emails: [{ value: data.email }],
+      emails: emails,
       photos: [{ value: data.avatar_url }],
       _json: data,
     };
