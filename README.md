@@ -18,7 +18,7 @@ Follow the steps on [the GitHub documentation](https://docs.github.com/en/develo
 ### Create the strategy instance
 
 ```ts
-import { GitHubStrategy } from "remix-auth";
+import { GitHubStrategy } from "remix-auth-github";
 
 let gitHubStrategy = new GitHubStrategy(
   {
