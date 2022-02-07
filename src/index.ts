@@ -87,6 +87,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
 > {
   name = "github";
 
+  private USER_EMAIL_SCOPE = "user:email";
   private scope: string;
   private allowSignup: boolean;
   private userAgent: string;
@@ -117,7 +118,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
       },
       verify
     );
-    this.scope = scope ?? "user:email";
+    this.scope = scope ?? this.USER_EMAIL_SCOPE;
     this.allowSignup = allowSignup ?? true;
     this.userAgent = userAgent ?? "Remix Auth";
   }
@@ -151,7 +152,15 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
     });
     let data: GitHubProfile["_json"] = await response.json();
 
-    let emails = await this.userEmails(accessToken);
+    let emails: GitHubProfile["emails"] = [
+      {
+        value: data.email,
+      },
+    ];
+
+    if (this.scope.includes(this.USER_EMAIL_SCOPE)) {
+      emails = await this.userEmails(accessToken);
+    }
 
     let profile: GitHubProfile = {
       provider: "github",
