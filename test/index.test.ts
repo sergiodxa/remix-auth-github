@@ -40,7 +40,7 @@ describe(GitHubStrategy, () => {
     }
   });
 
-  test("should have the scope `email` as default", async () => {
+  test("should have the scope `user:email` as default", async () => {
     let strategy = new GitHubStrategy(
       {
         clientID: "CLIENT_ID",
@@ -64,7 +64,7 @@ describe(GitHubStrategy, () => {
 
       let redirectUrl = new URL(location);
 
-      expect(redirectUrl.searchParams.get("scope")).toBe("email");
+      expect(redirectUrl.searchParams.get("scope")).toBe("user:email");
     }
   });
 

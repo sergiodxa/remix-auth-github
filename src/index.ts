@@ -15,6 +15,9 @@ export interface GitHubStrategyOptions {
   userAgent?: string;
 }
 
+export type GitHubEmails = OAuth2Profile["emails"];
+export type GitHubEmailsResponse = { email: string }[];
+
 export interface GitHubProfile extends OAuth2Profile {
   id: string;
   displayName: string;
@@ -23,7 +26,7 @@ export interface GitHubProfile extends OAuth2Profile {
     givenName: string;
     middleName: string;
   };
-  emails: [{ value: string }];
+  emails: GitHubEmails;
   photos: [{ value: string }];
   _json: {
     login: string;
@@ -84,10 +87,12 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
 > {
   name = "github";
 
+  private USER_EMAIL_SCOPE = "user:email";
   private scope: string;
   private allowSignup: boolean;
   private userAgent: string;
   private userInfoURL = "https://api.github.com/user";
+  private userEmailsURL = "https://api.github.com/user/emails";
 
   constructor(
     {
@@ -113,7 +118,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
       },
       verify
     );
-    this.scope = scope ?? "email";
+    this.scope = scope ?? this.USER_EMAIL_SCOPE;
     this.allowSignup = allowSignup ?? true;
     this.userAgent = userAgent ?? "Remix Auth";
   }
@@ -124,7 +129,19 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
       allow_signup: String(this.allowSignup),
     });
   }
+  protected async userEmails(accessToken: string): Promise<GitHubEmails> {
+    let response = await fetch(this.userEmailsURL, {
+      headers: {
+        Accept: "application/vnd.github.v3+json",
+        Authorization: `token ${accessToken}`,
+        "User-Agent": this.userAgent,
+      },
+    });
 
+    let data: GitHubEmailsResponse = await response.json();
+    let emails: GitHubEmails = data.map(({ email }) => ({ value: email }));
+    return emails;
+  }
   protected async userProfile(accessToken: string): Promise<GitHubProfile> {
     let response = await fetch(this.userInfoURL, {
       headers: {
@@ -135,6 +152,16 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
     });
     let data: GitHubProfile["_json"] = await response.json();
 
+    let emails: GitHubProfile["emails"] = [
+      {
+        value: data.email,
+      },
+    ];
+
+    if (this.scope.includes(this.USER_EMAIL_SCOPE)) {
+      emails = await this.userEmails(accessToken);
+    }
+
     let profile: GitHubProfile = {
       provider: "github",
       displayName: data.login,
@@ -144,7 +171,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
         givenName: data.name,
         middleName: data.name,
       },
-      emails: [{ value: data.email }],
+      emails: emails,
       photos: [{ value: data.avatar_url }],
       _json: data,
     };
