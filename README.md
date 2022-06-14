@@ -26,7 +26,7 @@ let gitHubStrategy = new GitHubStrategy(
     clientSecret: "YOUR_CLIENT_SECRET",
     callbackURL: "https://example.com/auth/github/callback",
   },
-  async ({ accessToken, extraParams, profile}) => {
+  async ({ accessToken, extraParams, profile }) => {
     // Get the user data from your DB or API using the tokens and profile
     return User.findOrCreate({ email: profile.emails[0].value });
   }
@@ -50,7 +50,8 @@ export default function Login() {
 
 ```tsx
 // app/routes/auth/github.tsx
-import { ActionFunction, LoaderFunction, redirect } from "remix";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { authenticator } from "~/auth.server";
 
 export let loader: LoaderFunction = () => redirect("/login");
@@ -62,7 +63,7 @@ export let action: ActionFunction = ({ request }) => {
 
 ```tsx
 // app/routes/auth/github/callback.tsx
-import { LoaderFunction } from "remix";
+import type { LoaderFunction } from "@remix-run/node";
 import { authenticator } from "~/auth.server";
 
 export let loader: LoaderFunction = ({ request }) => {
