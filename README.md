@@ -50,23 +50,23 @@ export default function Login() {
 
 ```tsx
 // app/routes/auth/github.tsx
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type { ActionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { authenticator } from "~/auth.server";
 
-export let loader: LoaderFunction = () => redirect("/login");
+export let loader = () => redirect("/login");
 
-export let action: ActionFunction = ({ request }) => {
+export let action = ({ request }: ActionArgs) => {
   return authenticator.authenticate("github", request);
 };
 ```
 
 ```tsx
 // app/routes/auth/github/callback.tsx
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
 import { authenticator } from "~/auth.server";
 
-export let loader: LoaderFunction = ({ request }) => {
+export let loader = ({ request }: LoaderArgs) => {
   return authenticator.authenticate("github", request, {
     successRedirect: "/dashboard",
     failureRedirect: "/login",
