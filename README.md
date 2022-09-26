@@ -54,9 +54,11 @@ import type { ActionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { authenticator } from "~/auth.server";
 
-export let loader = () => redirect("/login");
+export async function loader() {
+  return redirect("/login");
+}
 
-export let action = ({ request }: ActionArgs) => {
+export async function action({ request }: ActionArgs) {
   return authenticator.authenticate("github", request);
 };
 ```
@@ -66,7 +68,7 @@ export let action = ({ request }: ActionArgs) => {
 import type { LoaderArgs } from "@remix-run/node";
 import { authenticator } from "~/auth.server";
 
-export let loader = ({ request }: LoaderArgs) => {
+export async function loader({ request }: LoaderArgs) {
   return authenticator.authenticate("github", request, {
     successRedirect: "/dashboard",
     failureRedirect: "/login",
