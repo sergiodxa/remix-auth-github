@@ -53,7 +53,7 @@ export type GitHubScope =
   | "codespace"
   | "workflow";
 
-export type GitHubEmails = OAuth2Profile["emails"];
+export type GitHubEmails = NonNullable<OAuth2Profile["emails"]>;
 export type GitHubEmailsResponse = { email: string }[];
 
 export interface GitHubProfile extends OAuth2Profile {
