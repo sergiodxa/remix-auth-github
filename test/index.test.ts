@@ -1,5 +1,13 @@
-import { createCookieSessionStorage } from "@remix-run/server-runtime";
+import { createCookieSessionStorage } from "@remix-run/node";
+import { AuthenticateOptions } from "remix-auth";
 import { GitHubStrategy } from "../src";
+
+const BASE_OPTIONS: AuthenticateOptions = {
+  name: "form",
+  sessionKey: "user",
+  sessionErrorKey: "error",
+  sessionStrategyKey: "strategy",
+};
 
 describe(GitHubStrategy, () => {
   let verify = jest.fn();
@@ -25,9 +33,7 @@ describe(GitHubStrategy, () => {
     let request = new Request("https://example.app/auth/github");
 
     try {
-      await strategy.authenticate(request, sessionStorage, {
-        sessionKey: "user",
-      });
+      await strategy.authenticate(request, sessionStorage, BASE_OPTIONS);
     } catch (error) {
       if (!(error instanceof Response)) throw error;
       let location = error.headers.get("Location");
@@ -53,9 +59,7 @@ describe(GitHubStrategy, () => {
     let request = new Request("https://example.app/auth/github");
 
     try {
-      await strategy.authenticate(request, sessionStorage, {
-        sessionKey: "user",
-      });
+      await strategy.authenticate(request, sessionStorage, BASE_OPTIONS);
     } catch (error) {
       if (!(error instanceof Response)) throw error;
       let location = error.headers.get("Location");
@@ -81,9 +85,7 @@ describe(GitHubStrategy, () => {
     let request = new Request("https://example.app/auth/github");
 
     try {
-      await strategy.authenticate(request, sessionStorage, {
-        sessionKey: "user",
-      });
+      await strategy.authenticate(request, sessionStorage, BASE_OPTIONS);
     } catch (error) {
       if (!(error instanceof Response)) throw error;
 
