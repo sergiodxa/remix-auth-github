@@ -115,7 +115,7 @@ export interface GitHubExtraParams extends Record<string, string | number> {
   tokenType: string;
 }
 
-export const GitHubDefaultName = "github";
+export const GitHubStrategyDefaultName = "github";
 export const GitHubDefaultScope: GitHubScope = "user:email";
 export const GitHubScopeSeperator = " ";
 
