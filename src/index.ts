@@ -10,10 +10,48 @@ export interface GitHubStrategyOptions {
   clientID: string;
   clientSecret: string;
   callbackURL: string;
-  scope?: string;
+  scope?: GitHubScope[] | string;
   allowSignup?: boolean;
   userAgent?: string;
 }
+
+/**
+ * @see https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes
+ */
+export type GitHubScope =
+  | "repo"
+  | "repo:status"
+  | "repo_deployment"
+  | "public_repo"
+  | "repo:invite"
+  | "security_events"
+  | "admin:repo_hook"
+  | "write:repo_hook"
+  | "read:repo_hook"
+  | "admin:org"
+  | "write:org"
+  | "read:org"
+  | "admin:public_key"
+  | "write:public_key"
+  | "read:public_key"
+  | "admin:org_hook"
+  | "gist"
+  | "notifications"
+  | "user"
+  | "read:user"
+  | "user:email"
+  | "user:follow"
+  | "delete_repo"
+  | "write:discussion"
+  | "read:discussion"
+  | "write:packages"
+  | "read:packages"
+  | "delete:packages"
+  | "admin:gpg_key"
+  | "write:gpg_key"
+  | "read:gpg_key"
+  | "codespace"
+  | "workflow";
 
 export type GitHubEmails = OAuth2Profile["emails"];
 export type GitHubEmailsResponse = { email: string }[];
@@ -80,15 +118,18 @@ export interface GitHubExtraParams extends Record<string, string | number> {
   tokenType: string;
 }
 
+export const GitHubStrategyDefaultName = "github";
+export const GitHubStrategyDefaultScope: GitHubScope = "user:email";
+export const GitHubStrategyScopeSeperator = " ";
+
 export class GitHubStrategy<User> extends OAuth2Strategy<
   User,
   GitHubProfile,
   GitHubExtraParams
 > {
-  name = "github";
+  name = GitHubStrategyDefaultName;
 
-  private USER_EMAIL_SCOPE = "user:email";
-  private scope: string;
+  private scope: GitHubScope[];
   private allowSignup: boolean;
   private userAgent: string;
   private userInfoURL = "https://api.github.com/user";
@@ -118,14 +159,25 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
       },
       verify
     );
-    this.scope = scope ?? this.USER_EMAIL_SCOPE;
+    this.scope = this.getScope(scope);
     this.allowSignup = allowSignup ?? true;
     this.userAgent = userAgent ?? "Remix Auth";
   }
 
+  //Allow users the option to pass a scope string, or typed array
+  private getScope(scope: GitHubStrategyOptions["scope"]) {
+    if (!scope) {
+      return [GitHubStrategyDefaultScope];
+    } else if (typeof scope === "string") {
+      return scope.split(GitHubStrategyScopeSeperator) as GitHubScope[];
+    }
+
+    return scope;
+  }
+
   protected authorizationParams() {
     return new URLSearchParams({
-      scope: this.scope,
+      scope: this.scope.join(GitHubStrategyScopeSeperator),
       allow_signup: String(this.allowSignup),
     });
   }
@@ -158,7 +210,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
       },
     ];
 
-    if (this.scope.includes(this.USER_EMAIL_SCOPE)) {
+    if (this.scope.includes(GitHubStrategyDefaultScope)) {
       emails = await this.userEmails(accessToken);
     }
 
