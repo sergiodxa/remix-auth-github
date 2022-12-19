@@ -15,6 +15,9 @@ export interface GitHubStrategyOptions {
   userAgent?: string;
 }
 
+/**
+ * @see https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes
+ */
 export type GitHubScope =
   | "repo"
   | "repo:status"
@@ -116,15 +119,15 @@ export interface GitHubExtraParams extends Record<string, string | number> {
 }
 
 export const GitHubStrategyDefaultName = "github";
-export const GitHubDefaultScope: GitHubScope = "user:email";
-export const GitHubScopeSeperator = " ";
+export const GitHubStrategyDefaultScope: GitHubScope = "user:email";
+export const GitHubStrategyScopeSeperator = " ";
 
 export class GitHubStrategy<User> extends OAuth2Strategy<
   User,
   GitHubProfile,
   GitHubExtraParams
 > {
-  name = GitHubDefaultName;
+  name = GitHubStrategyDefaultName;
 
   private scope: GitHubScope[];
   private allowSignup: boolean;
@@ -162,11 +165,11 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
   }
 
   //Allow users the option to pass a scope string, or typed array
-  protected getScope(scope: GitHubStrategyOptions["scope"]) {
+  private getScope(scope: GitHubStrategyOptions["scope"]) {
     if (!scope) {
-      return [GitHubDefaultScope];
+      return [GitHubStrategyDefaultScope];
     } else if (typeof scope === "string") {
-      return scope.split(GitHubScopeSeperator) as GitHubScope[];
+      return scope.split(GitHubStrategyScopeSeperator) as GitHubScope[];
     }
 
     return scope;
@@ -174,7 +177,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
 
   protected authorizationParams() {
     return new URLSearchParams({
-      scope: this.scope.join(GitHubScopeSeperator),
+      scope: this.scope.join(GitHubStrategyScopeSeperator),
       allow_signup: String(this.allowSignup),
     });
   }
@@ -207,7 +210,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
       },
     ];
 
-    if (this.scope.includes(GitHubDefaultScope)) {
+    if (this.scope.includes(GitHubStrategyDefaultScope)) {
       emails = await this.userEmails(accessToken);
     }
 
