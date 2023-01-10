@@ -114,8 +114,11 @@ export interface GitHubProfile extends OAuth2Profile {
   };
 }
 
-export interface GitHubExtraParams extends Record<string, string | number> {
+export interface GitHubExtraParams
+  extends Record<string, string | number | null> {
   tokenType: string;
+  accessTokenExpiresIn: number | null;
+  refreshTokenExpiresIn: number | null;
 }
 
 export const GitHubStrategyDefaultName = "github";
@@ -236,18 +239,38 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
     refreshToken: string;
     extraParams: GitHubExtraParams;
   }> {
-    let data = await response.text();
+    let data = new URLSearchParams(await response.text());
 
-    let accessToken = new URLSearchParams(data).get("access_token");
+    let accessToken = data.get("access_token");
     if (!accessToken) throw new AuthorizationError("Missing access token.");
 
-    let tokenType = new URLSearchParams(data).get("token_type");
+    let tokenType = data.get("token_type");
     if (!tokenType) throw new AuthorizationError("Missing token type.");
+
+    let refreshToken = data.get("refresh_token") ?? "";
+    let accessTokenExpiresIn = parseExpiresIn(data.get("expires_in"));
+    let refreshTokenExpiresIn = parseExpiresIn(
+      data.get("refresh_token_expires_in")
+    );
 
     return {
       accessToken,
-      refreshToken: "",
-      extraParams: { tokenType },
+      refreshToken,
+      extraParams: {
+        tokenType,
+        accessTokenExpiresIn,
+        refreshTokenExpiresIn,
+      },
     } as const;
+  }
+}
+
+function parseExpiresIn(value: string | null): number | null {
+  if (!value) return null;
+
+  try {
+    return Number.parseInt(value, 10);
+  } catch {
+    return null;
   }
 }
