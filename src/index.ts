@@ -13,6 +13,10 @@ export interface GitHubStrategyOptions {
   scope?: GitHubScope[] | string;
   allowSignup?: boolean;
   userAgent?: string;
+  authorizationURL?: string;
+  tokenURL?: string;
+  userInfoURL?: string;
+  userEmailsURL?: string;
 }
 
 /**
@@ -135,8 +139,8 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
   private scope: GitHubScope[];
   private allowSignup: boolean;
   private userAgent: string;
-  private userInfoURL = "https://api.github.com/user";
-  private userEmailsURL = "https://api.github.com/user/emails";
+  private userInfoURL: string;
+  private userEmailsURL: string;
 
   constructor(
     {
@@ -146,6 +150,10 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
       scope,
       allowSignup,
       userAgent,
+      userInfoURL = "https://api.github.com/user",
+      userEmailsURL = "https://api.github.com/user/emails",
+      authorizationURL = "https://github.com/login/oauth/authorize",
+      tokenURL = "https://github.com/login/oauth/access_token",
     }: GitHubStrategyOptions,
     verify: StrategyVerifyCallback<
       User,
@@ -157,14 +165,16 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
         clientID,
         clientSecret,
         callbackURL,
-        authorizationURL: "https://github.com/login/oauth/authorize",
-        tokenURL: "https://github.com/login/oauth/access_token",
+        authorizationURL,
+        tokenURL,
       },
       verify
     );
     this.scope = this.getScope(scope);
     this.allowSignup = allowSignup ?? true;
     this.userAgent = userAgent ?? "Remix Auth";
+    this.userInfoURL = userInfoURL;
+    this.userEmailsURL = userEmailsURL;
   }
 
   //Allow users the option to pass a scope string, or typed array
