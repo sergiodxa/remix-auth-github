@@ -58,7 +58,12 @@ export type GitHubScope =
   | "workflow";
 
 export type GitHubEmails = NonNullable<OAuth2Profile["emails"]>;
-export type GitHubEmailsResponse = { email: string }[];
+export type GitHubEmailsResponse = {
+  email: string;
+  verified: boolean;
+  primary: boolean;
+  visibility: string | null;
+}[];
 
 export interface GitHubProfile extends OAuth2Profile {
   id: string;
@@ -194,6 +199,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
       allow_signup: String(this.allowSignup),
     });
   }
+
   protected async userEmails(accessToken: string): Promise<GitHubEmails> {
     let response = await fetch(this.userEmailsURL, {
       headers: {
@@ -204,9 +210,20 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
     });
 
     let data: GitHubEmailsResponse = await response.json();
-    let emails: GitHubEmails = data.map(({ email }) => ({ value: email }));
+
+    let emails: GitHubEmails = data
+      .filter(({ verified }) => verified) // Filter out unverified emails
+      // Sort to keep the primary email first
+      .sort((a, b) => {
+        if (a.primary && !b.primary) return -1;
+        if (!a.primary && b.primary) return 1;
+        return 0;
+      })
+      .map(({ email }) => ({ value: email }));
+
     return emails;
   }
+
   protected async userProfile(accessToken: string): Promise<GitHubProfile> {
     let response = await fetch(this.userInfoURL, {
       headers: {
@@ -215,13 +232,10 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
         "User-Agent": this.userAgent,
       },
     });
+
     let data: GitHubProfile["_json"] = await response.json();
 
-    let emails: GitHubProfile["emails"] = [
-      {
-        value: data.email,
-      },
-    ];
+    let emails: GitHubProfile["emails"] = [{ value: data.email }];
 
     if (this.scope.includes(GitHubStrategyDefaultScope)) {
       emails = await this.userEmails(accessToken);
