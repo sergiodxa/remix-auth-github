@@ -141,7 +141,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
 > {
   name = GitHubStrategyDefaultName;
 
-  private scope: GitHubScope[];
+  scope: string;
   private allowSignup: boolean;
   private userAgent: string;
   private userInfoURL: string;
@@ -163,7 +163,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
     verify: StrategyVerifyCallback<
       User,
       OAuth2StrategyVerifyParams<GitHubProfile, GitHubExtraParams>
-    >
+    >,
   ) {
     super(
       {
@@ -173,9 +173,9 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
         authorizationURL,
         tokenURL,
       },
-      verify
+      verify,
     );
-    this.scope = this.getScope(scope);
+    this.scope = this.getScope(scope).join(GitHubStrategyScopeSeperator);
     this.allowSignup = allowSignup ?? true;
     this.userAgent = userAgent ?? "Remix Auth";
     this.userInfoURL = userInfoURL;
@@ -195,7 +195,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
 
   protected authorizationParams() {
     return new URLSearchParams({
-      scope: this.scope.join(GitHubStrategyScopeSeperator),
+      scope: this.scope,
       allow_signup: String(this.allowSignup),
     });
   }
@@ -274,7 +274,7 @@ export class GitHubStrategy<User> extends OAuth2Strategy<
     let refreshToken = data.get("refresh_token") ?? "";
     let accessTokenExpiresIn = parseExpiresIn(data.get("expires_in"));
     let refreshTokenExpiresIn = parseExpiresIn(
-      data.get("refresh_token_expires_in")
+      data.get("refresh_token_expires_in"),
     );
 
     return {
