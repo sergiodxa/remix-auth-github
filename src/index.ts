@@ -1,4 +1,4 @@
-import { StrategyVerifyCallback } from "remix-auth";
+import type { StrategyVerifyCallback } from "remix-auth";
 import { OAuth2Strategy } from "remix-auth-oauth2";
 import type {
 	OAuth2Profile,
