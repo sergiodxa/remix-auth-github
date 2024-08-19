@@ -22,11 +22,11 @@ import { GitHubStrategy } from "remix-auth-github";
 
 let gitHubStrategy = new GitHubStrategy(
   {
-    clientID: "YOUR_CLIENT_ID",
+    clientId: "YOUR_CLIENT_ID",
     clientSecret: "YOUR_CLIENT_SECRET",
-    callbackURL: "https://example.com/auth/github/callback",
+    redirectURI: "https://example.com/auth/github/callback",
   },
-  async ({ accessToken, extraParams, profile }) => {
+  async ({ profile, tokens, request, context }) => {
     // Get the user data from your DB or API using the tokens and profile
     return User.findOrCreate({ email: profile.emails[0].value });
   }
