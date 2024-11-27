@@ -108,3 +108,42 @@ authenticator.use(
 // later in your code you can use it to get new tokens object
 let tokens = await strategy.refreshToken(user.refreshToken);
 ```
+
+### Get user profile
+
+Once you have the OAuth2 tokens object, you can use the access token to get the [user profile from GitHub's API](https://docs.github.com/en/rest/users/users?apiVersion=2022-11-28#get-the-authenticated-user).
+
+```ts
+let response = await fetch("https://api.github.com/user", {
+  headers: {
+    Accept: "application/vnd.github+json",
+    Authorization: `Bearer ${tokens.accessToken()}`,
+    "X-GitHub-Api-Version": "2022-11-28",
+  },
+});
+
+let user = await response.json();
+
+// Somehow parse the user object to ensure it has the correct shape
+```
+
+### Get user email
+
+Similarly, you can use the access token to get the [user's email from GitHub's API](https://docs.github.com/en/rest/users/emails?apiVersion=2022-11-28#list-email-addresses-for-the-authenticated-user).
+
+> [!IMPORTANT]
+> You will need to request the `user:email` scope when authenticating the user.
+
+```ts
+let response = await fetch("https://api.github.com/user/emails", {
+  headers: {
+    Accept: "application/vnd.github+json",
+    Authorization: `Bearer ${tokens.accessToken()}`,
+    "X-GitHub-Api-Version": "2022-11-28",
+  },
+});
+
+let emails = await response.json();
+
+// Somehow parse the emails object to ensure it has the correct shape
+```

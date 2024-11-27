@@ -37,14 +37,8 @@
 	"engines": {
 		"node": "^18.0.0 || ^20.0.0 || >=20.0.0"
 	},
-	"files": [
-		"build",
-		"package.json",
-		"README.md"
-	],
-	"funding": [
-		"https://github.com/sponsors/sergiodxa"
-	],
+	"files": ["build", "package.json", "README.md"],
+	"funding": ["https://github.com/sponsors/sergiodxa"],
 	"homepage": "https://github.com/sergiodxa/remix-auth-github#readme",
 	"keywords": [
 		"remix",
