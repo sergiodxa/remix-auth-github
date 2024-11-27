@@ -1,19 +1,6 @@
 {
 	"name": "remix-auth-github",
 	"version": "2.0.0",
-	"description": "A strategy to implement login with GitHub in Remix Auth.",
-	"license": "MIT",
-	"funding": [
-		"https://github.com/sponsors/sergiodxa"
-	],
-	"keywords": [
-		"remix",
-		"remix-auth",
-		"auth",
-		"authentication",
-		"strategy",
-		"github"
-	],
 	"author": {
 		"name": "Sergio Xalambrí",
 		"email": "hello+oss@sergiodxa.com",
@@ -23,10 +10,45 @@
 		"url": "https://github.com/sergiodxa/remix-auth-github",
 		"type": "git"
 	},
-	"homepage": "https://github.com/sergiodxa/remix-auth-github#readme",
+	"devDependencies": {
+		"@arethetypeswrong/cli": "^0.17.0",
+		"@biomejs/biome": "^1.9.4",
+		"@total-typescript/tsconfig": "^1.0.4",
+		"@types/bun": "^1.1.14",
+		"@types/debug": "^4.1.12",
+		"consola": "^3.2.3",
+		"msw": "^2.6.6",
+		"remix-auth": "^4.0.0",
+		"typedoc": "^0.27.0",
+		"typedoc-plugin-mdn-links": "^4.0.1",
+		"typescript": "^5.7.2"
+	},
+	"peerDependencies": {
+		"remix-auth": "^4.0.0"
+	},
+	"exports": {
+		".": "./build/index.js",
+		"./package.json": "./package.json"
+	},
 	"bugs": {
 		"url": "https://github.com/sergiodxa/remix-auth-github/issues"
 	},
+	"description": "A strategy to implement login with GitHub in Remix Auth.",
+	"engines": {
+		"node": "^18.0.0 || ^20.0.0 || >=20.0.0"
+	},
+	"files": ["build", "package.json", "README.md"],
+	"funding": ["https://github.com/sponsors/sergiodxa"],
+	"homepage": "https://github.com/sergiodxa/remix-auth-github#readme",
+	"keywords": [
+		"remix",
+		"remix-auth",
+		"auth",
+		"authentication",
+		"strategy",
+		"github"
+	],
+	"license": "MIT",
 	"scripts": {
 		"build": "tsc",
 		"typecheck": "tsc --noEmit",
@@ -36,51 +58,9 @@
 	},
 	"sideEffects": false,
 	"type": "module",
-	"engines": {
-		"node": "^18.0.0 || ^20.0.0 || >=20.0.0"
-	},
-	"files": [
-		"build",
-		"package.json",
-		"README.md"
-	],
-	"exports": {
-		".": "./build/index.js",
-		"./package.json": "./package.json"
-	},
 	"dependencies": {
-		"remix-auth-oauth2": "^2.2.0"
-	},
-	"peerDependencies": {
-		"@remix-run/cloudflare": "^1.0.0 || ^2.0.0",
-		"@remix-run/node": "^1.0.0 || ^2.0.0",
-		"@remix-run/deno": "^1.0.0 || ^2.0.0",
-		"remix-auth": "^3.6.0"
-	},
-	"peerDependenciesMeta": {
-		"@remix-run/cloudflare": {
-			"optional": true
-		},
-		"@remix-run/node": {
-			"optional": true
-		},
-		"@remix-run/deno": {
-			"optional": true
-		}
-	},
-	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.17.0",
-		"@biomejs/biome": "^1.9.4",
-		"@remix-run/node": "^2.15.0",
-		"@remix-run/server-runtime": "^2.15.0",
-		"@total-typescript/tsconfig": "^1.0.4",
-		"@types/bun": "^1.1.14",
-		"@types/debug": "^4.1.12",
-		"consola": "^3.2.3",
-		"msw": "^2.6.6",
-		"remix-auth": "^3.6.0",
-		"typedoc": "^0.27.0",
-		"typedoc-plugin-mdn-links": "^4.0.1",
-		"typescript": "^5.7.2"
+		"@mjackson/headers": "^0.8.0",
+		"arctic": "^2.3.0",
+		"debug": "^4.3.7"
 	}
 }
