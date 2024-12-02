@@ -65,12 +65,12 @@ export class GitHubStrategy<User> extends Strategy<
 
 			let state = generateState();
 
+			debug("Generated State", state);
+
 			let url = this.client.createAuthorizationURL(
 				state,
 				this.options.scopes ?? [],
 			);
-
-			debug("State", state);
 
 			url.search = this.authorizationParams(
 				url.searchParams,
