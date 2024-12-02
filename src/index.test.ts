@@ -116,10 +116,7 @@ describe(GitHubStrategy.name, () => {
 		let cookie = new Cookie();
 		cookie.set(
 			"github",
-			new URLSearchParams({
-				state: "random-state",
-				codeVerifier: "random-code-verifier",
-			}).toString(),
+			new URLSearchParams({ state: "random-state" }).toString(),
 		);
 
 		let request = new Request(
@@ -141,10 +138,7 @@ describe(GitHubStrategy.name, () => {
 		let cookie = new Cookie();
 		cookie.set(
 			"github",
-			new URLSearchParams({
-				state: "random-state",
-				codeVerifier: "random-code-verifier",
-			}).toString(),
+			new URLSearchParams({ state: "random-state" }).toString(),
 		);
 
 		let request = new Request(
