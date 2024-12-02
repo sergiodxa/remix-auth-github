@@ -1,6 +1,6 @@
 {
 	"name": "remix-auth-github",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"author": {
 		"name": "Sergio Xalambrí",
 		"email": "hello+oss@sergiodxa.com",
@@ -37,8 +37,14 @@
 	"engines": {
 		"node": "^18.0.0 || ^20.0.0 || >=20.0.0"
 	},
-	"files": ["build", "package.json", "README.md"],
-	"funding": ["https://github.com/sponsors/sergiodxa"],
+	"files": [
+		"build",
+		"package.json",
+		"README.md"
+	],
+	"funding": [
+		"https://github.com/sponsors/sergiodxa"
+	],
 	"homepage": "https://github.com/sergiodxa/remix-auth-github#readme",
 	"keywords": [
 		"remix",
