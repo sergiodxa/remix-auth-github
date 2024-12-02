@@ -63,7 +63,12 @@ export class GitHubStrategy<User> extends Strategy<
 		if (!stateUrl) {
 			debug("No state found in the URL, redirecting to authorization endpoint");
 
-			let { state, url } = this.createAuthorizationURL();
+			let state = generateState();
+
+			let url = this.client.createAuthorizationURL(
+				state,
+				this.options.scopes ?? [],
+			);
 
 			debug("State", state);
 
@@ -104,12 +109,8 @@ export class GitHubStrategy<User> extends Strategy<
 			throw new RangeError("State in URL doesn't match state in cookie.");
 		}
 
-		if (!params.has("codeVerifier")) {
-			throw new ReferenceError("Missing code verifier on cookie.");
-		}
-
 		debug("Validating authorization code");
-		let tokens = await this.validateAuthorizationCode(code);
+		let tokens = await this.client.validateAuthorizationCode(code);
 
 		debug("Verifying the user profile");
 		let user = await this.verify({ request, tokens });
@@ -127,10 +128,6 @@ export class GitHubStrategy<User> extends Strategy<
 		);
 
 		return { state, url };
-	}
-
-	protected validateAuthorizationCode(code: string) {
-		return this.client.validateAuthorizationCode(code);
 	}
 
 	/**
