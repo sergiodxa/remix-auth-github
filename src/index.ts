@@ -119,17 +119,6 @@ export class GitHubStrategy<User> extends Strategy<
 		return user;
 	}
 
-	protected createAuthorizationURL() {
-		let state = generateState();
-
-		let url = this.client.createAuthorizationURL(
-			state,
-			this.options.scopes ?? [],
-		);
-
-		return { state, url };
-	}
-
 	/**
 	 * Return extra parameters to be included in the authorization request.
 	 *
