@@ -2,7 +2,9 @@ import { Cookie, SetCookie, type SetCookieInit } from "@mjackson/headers";
 import {
 	GitHub,
 	OAuth2RequestError,
-	OAuth2Tokens,
+	type OAuth2Tokens,
+	UnexpectedErrorResponseBodyError,
+	UnexpectedResponseError,
 	generateState,
 } from "arctic";
 import createDebug from "debug";
@@ -12,6 +14,12 @@ import { redirect } from "./lib/redirect.js";
 type URLConstructor = ConstructorParameters<typeof URL>[0];
 
 const debug = createDebug("GitHubStrategy");
+
+export {
+	OAuth2RequestError,
+	UnexpectedResponseError,
+	UnexpectedErrorResponseBodyError,
+};
 
 export class GitHubStrategy<User> extends Strategy<
 	User,
