@@ -107,7 +107,7 @@ export class GitHubStrategy<User> extends Strategy<
 		if (!code) throw new ReferenceError("Missing code in the URL");
 
 		let cookie = new Cookie(request.headers.get("cookie") ?? "");
-		let params = new URLSearchParams(cookie.get(this.cookieName));
+		let params = new URLSearchParams(cookie.get(this.cookieName) ?? "");
 
 		if (!params.has("state")) {
 			throw new ReferenceError("Missing state on cookie.");
