@@ -65,7 +65,7 @@
 	"sideEffects": false,
 	"type": "module",
 	"dependencies": {
-		"@mjackson/headers": "^0.10.0",
+		"@mjackson/headers": "^0.11.1",
 		"arctic": "^3.0.0",
 		"debug": "^4.3.7"
 	}
