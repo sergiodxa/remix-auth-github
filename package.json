@@ -21,7 +21,7 @@
 		"remix-auth": "^4.0.0",
 		"typedoc": "^0.28.1",
 		"typedoc-plugin-mdn-links": "^5.0.1",
-		"typescript": "^5.7.2"
+		"typescript": "^6.0.2"
 	},
 	"peerDependencies": {
 		"remix-auth": "^4.0.0"
