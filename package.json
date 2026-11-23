@@ -18,13 +18,13 @@
 		"@types/debug": "^4.1.12",
 		"consola": "^3.2.3",
 		"msw": "^3.0.1",
-		"remix-auth": "^4.0.0",
+		"remix-auth": "^5.0.0",
 		"typedoc": "^0.28.1",
 		"typedoc-plugin-mdn-links": "^5.0.1",
 		"typescript": "^7.0.2"
 	},
 	"peerDependencies": {
-		"remix-auth": "^4.0.0"
+		"remix-auth": "^5.0.0"
 	},
 	"exports": {
 		".": "./build/index.js",
